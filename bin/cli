@@ -1,0 +1,38 @@
+begin
+  print "Gimme yo email: "
+  email = gets.chomp
+
+  u = User.where(email: email).first
+  raise unless u.id
+rescue
+  puts "bad email, man"
+  retry
+end
+
+print "Create short url or visit short url? ('S' or 'V'): "
+choice = gets.chomp
+
+if choice == "S"
+  print "enter your long url: "
+  long_url = gets.chomp
+
+  short_url_obj = ShortenedUrl.create_for_user_and_long_url!(u, long_url)
+
+  puts "short url is #{short_url_obj.short_url}"
+else
+  begin
+    print "enter your short url: "
+    short_url = gets.chomp
+
+    short_url_obj = ShortenedUrl.where(short_url: short_url).first
+
+    raise unless short_url_obj.long_url
+  rescue
+    puts "bad url, man"
+    retry
+  end
+
+  puts "long url is #{short_url_obj.long_url}"
+end
+
+print "did this work?"
